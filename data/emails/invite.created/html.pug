@@ -1,0 +1,10 @@
+extends ./../layouts/main.pug
+block title
+    p(class="warn") Вітаємо #{invite.email}! Вас замовлено до системи у якості адміністратора.
+block description
+    p Перейдіть по посиланню для завершення реєстрації.
+    p Токен реєстрації користувача: #{invite.token}
+    a(href=`https://admin.lakomka.store/invite?token=${invite.token}`) Завершити реєстрацію
+//-
+//- block actions
+//-     a(href=link, target="_blank" class="button") Visit our website

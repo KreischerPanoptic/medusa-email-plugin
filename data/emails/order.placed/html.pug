@@ -1,8 +1,8 @@
 extends ./../layouts/main.pug
 block title
-    p Your order has been received!
+    p Ваше замовлення отримано!
 block description
-    p Here are the items you ordered
+    p Ось деталі вашого замовлення:
     table(class="list" border="1")
         for item in order.items
             tr
@@ -20,10 +20,10 @@ block description
                     p #{item.shipping_option.amount / 100} #{order.currency_code === 'usd' ? '$' : order.currency_code}
         tr
             td(colspan="2")
-                p(class="align-right bold") Total
+                p(class="align-right bold") Всього
             td
                 p(class="bold") #{total_value} #{order.currency_code === 'usd' ? '$' : order.currency_code}
-    p(class="small") Order ID: #{order.id}
+    p(class="small") ID Замовлення: #{order.id}
 //-
 //- block actions
 //-     a(href=link, target="_blank" class="button") Visit our website

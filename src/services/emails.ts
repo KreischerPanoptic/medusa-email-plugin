@@ -1,8 +1,12 @@
+import { Logger } from "@medusajs/types";
 import {
-    NotificationService,
-    Logger,
+    UserService,
+    CustomerService,
     OrderService,
-} from "medusa-interfaces";
+    NotificationService,
+    Customer,
+    User
+} from '@medusajs/medusa'
 import nodemailer from "nodemailer";
 import EmailTemplates from "email-templates";
 
@@ -15,10 +19,30 @@ interface EmailConfig {
     smtpPassword: string;
 }
 
+class UserData {
+    id: string;
+    email: string;
+    user?: User | null;
+    data?: any;
+}
+
+class CustomerData {
+    customer?: Customer | null;
+    data?: any;
+}
+
+class InviteData {
+    id: string;
+    token: string;
+    email: string;
+}
+
 class EmailsService extends NotificationService {
     static identifier = 'emails';
     static is_installed = true;
 
+    protected customerService: CustomerService;
+    protected userService: UserService;
     protected orderService: OrderService;
     protected cartService: any;
     protected lineItemService: any;
@@ -30,16 +54,66 @@ class EmailsService extends NotificationService {
 
         this.logger = container.logger;
         this.logger.info("✔ Email service initialized");
-
+        this.customerService = container.customerService;
+        this.userService = container.userService;
         this.orderService = container.orderService;
         this.cartService = container.cartService;
         this.lineItemService = container.lineItemService;
         this.emailConfig = _options;
         if (!this.emailConfig.templateDir) {
-            this.emailConfig.templateDir = "node_modules/@rootxpdev/medusa-email-plugin/data/emails";
+            this.emailConfig.templateDir = "node_modules/@kreischerpanoptic/medusa-email-plugin/data/emails";
         }
         this.logger.info(`Email templates loaded from ${this.emailConfig.templateDir}`);
     }
+
+      async userCreatedData(data: any): Promise<UserData> {
+        const user = await this.userService.retrieve(data.id);
+        if(user) {
+            return {
+                id: user.id,
+                email: user.email,
+                user,
+                data
+            }
+        }
+        return {id: data.id, email: this.emailConfig.smtpUser, user: null, data}
+      }
+
+      async userPasswordResetData(data: any): Promise<UserData> {
+        const user = await this.userService.retrieveByEmail(data.email);
+        if(user) {
+            return {
+                id: user.id,
+                email: user.email,
+                user,
+                data
+            }
+        }
+        return {id: '', email: data.email, user: null, data}
+      }
+      
+      async customerCreatedData(data: Customer): Promise<CustomerData> {
+        return {customer: data, data: null}
+      }
+
+      async customerPasswordResetData(data: any): Promise<CustomerData> {
+        const customer = await this.customerService.retrieve(data.id);
+        if(customer) {
+            return {
+                customer,
+                data
+            }
+        }
+        return {customer: null, data}
+      }
+    
+      inviteData(data: any): InviteData {
+        return {
+            id: data.id,
+            token: data.token,
+            email: data.user_email
+        }
+      }
 
     async sendNotification(
         event: string,
@@ -94,6 +168,78 @@ class EmailsService extends NotificationService {
                 data: data,
                 status: "sent",
             };
+        }
+        else if(event.includes("customer.")) {
+            // retrieve customer
+            let customer: CustomerData;
+            if(event.includes('.created')) {
+                customer = await this.customerCreatedData(data);
+            }
+            else if(event.includes('.password')) {
+                customer = await this.customerPasswordResetData(data);
+            }
+
+            if(customer) {
+                this.logger.info(`Customer: ${JSON.stringify(customer)}`);
+                
+                await this.sendEmail(customer.customer.email, event, {
+                    event,
+                    customer,
+                    id: customer.customer.id
+                })
+
+                return {
+                    to: customer.customer.email,
+                    data: data,
+                    status: "sent",
+                };
+            }
+        }
+        else if(event.includes("invite.")) {
+            // retrieve invite
+            let invite: InviteData = this.inviteData(data);
+
+            if(invite) {
+                this.logger.info(`Invite: ${JSON.stringify(invite)}`);
+                
+                await this.sendEmail(invite.email, event, {
+                    event,
+                    invite,
+                    token: invite.token,
+                    id: invite.id
+                })
+
+                return {
+                    to: invite.email,
+                    data: data,
+                    status: "sent",
+                };
+            }
+        }
+        else if(event.includes("user.")) {
+            // retrieve user
+            let user: UserData;
+            if(event.includes('.created')) {
+                user = await this.userCreatedData(data);
+            }
+            else if(event.includes('.password')) {
+                user = await this.userPasswordResetData(data);
+            }
+
+            if(user) {
+                this.logger.info(`User: ${JSON.stringify(user)}`);
+                
+                await this.sendEmail(user.email, event, {
+                    event,
+                    user,
+                })
+
+                return {
+                    to: user.email,
+                    data: data,
+                    status: "sent",
+                };
+            }
         }
 
         return {

@@ -8,6 +8,11 @@ export default async (container: any): Promise<void> => {
         'order.completed',
         'order.shipment_created',
         'order.refund_created',
+        'customer.created',
+        'customer.password_reset',
+        'invite.created',
+        'user.created',
+        'user.password_reset'
     ];
     for (const event of emailEvents) {
         notificationService.subscribe(

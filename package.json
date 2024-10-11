@@ -1,14 +1,14 @@
 {
-   "name": "@rootxpdev/medusa-email-plugin",
-   "version": "0.8.0",
+   "name": "@kreischerpanoptic/medusa-email-plugin",
+   "version": "0.0.1",
    "description": "Send emails when certain actions happens in medusa store",
    "main": "index.js",
    "repository": {
       "type": "git",
-      "url": "https://github.com/RootXP-dev/medusa-email-plugin"
+      "url": "https://github.com/KreischerPanoptic/medusa-email-plugin"
    },
-   "homepage:": "https://github.com/RootXP-dev/medusa-email-plugin",
-   "author": "Root XP",
+   "homepage:": "https://github.com/KreischerPanoptic/medusa-email-plugin",
+   "author": "KreischerPanoptic",
    "license": "GPL-3.0-or-later",
    "dependencies": {
       "email-templates": "^11.1.1",

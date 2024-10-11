@@ -1,0 +1,10 @@
+extends ./../layouts/main.pug
+block title
+    p(class="warn") УВАГА! Отримано запит на зміну пароля користувача з Email #{customer.customer.email}
+block description
+    p(class="warn") Якщо ви не запитували зміну пароля - ігноруйте це повідомлення.
+    p Токен зміни пароля користувача: #{customer.data.token}
+    a(href=`https://lakomka.store/customer/reset?email=${customer.data.email}&token=${customer.data.token}`) Змінити пароль
+//-
+//- block actions
+//-     a(href=link, target="_blank" class="button") Visit our website
