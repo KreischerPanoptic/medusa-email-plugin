@@ -1,6 +1,6 @@
 {
    "name": "medusa-email-plugin-extended",
-   "version": "0.0.7",
+   "version": "0.0.8",
    "description": "Send emails when certain actions happens in medusa store",
    "main": "index.js",
    "repository": {
