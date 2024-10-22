@@ -1,7 +1,15 @@
-export default async (container: any): Promise<void> => {
-    const notificationService = container.resolve("notificationService")
-
-    // TODO: register all notification events
+import { 
+    MedusaContainer, 
+    NotificationService,
+  } from "@medusajs/medusa"
+  
+  export default async (
+    container: MedusaContainer
+  ): Promise<void> => {
+    const notificationService = container.resolve<
+      NotificationService
+    >("notificationService")
+    
     const emailEvents: string[] = [
         'order.placed',
         'order.cancelled',
@@ -14,10 +22,10 @@ export default async (container: any): Promise<void> => {
         'user.created',
         'user.password_reset'
     ];
-    for (const event of emailEvents) {
+    /*for (const event of emailEvents) {
         notificationService.subscribe(
             event,
-            "emails"
+            "email-notificator"
         )
-    }
+    }*/
 }

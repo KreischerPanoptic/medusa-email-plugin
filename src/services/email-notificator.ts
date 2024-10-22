@@ -3,7 +3,7 @@ import {
     UserService,
     CustomerService,
     OrderService,
-    NotificationService,
+    AbstractNotificationService,
     Customer,
     User
 } from '@medusajs/medusa'
@@ -37,9 +37,8 @@ class InviteData {
     email: string;
 }
 
-class EmailsService extends NotificationService {
-    static identifier = 'emails';
-    static is_installed = true;
+class EmailNotificatorService extends AbstractNotificationService  {
+    static identifier = 'emailnotif';
 
     protected customerService: CustomerService;
     protected userService: UserService;
@@ -49,7 +48,7 @@ class EmailsService extends NotificationService {
     protected logger: Logger;
     protected emailConfig: EmailConfig;
 
-    constructor(container: any, _options: EmailConfig) {
+    constructor(container: any, options: EmailConfig) {
         super(container);
 
         this.logger = container.logger;
@@ -59,9 +58,9 @@ class EmailsService extends NotificationService {
         this.orderService = container.orderService;
         this.cartService = container.cartService;
         this.lineItemService = container.lineItemService;
-        this.emailConfig = _options;
+        this.emailConfig = options;
         if (!this.emailConfig.templateDir) {
-            this.emailConfig.templateDir = "node_modules/@kreischerpanoptic/medusa-email-plugin/data/emails";
+            this.emailConfig.templateDir = "node_modules/medusa-email-plugin-extended/data/emails";
         }
         this.logger.info(`Email templates loaded from ${this.emailConfig.templateDir}`);
     }
@@ -306,4 +305,4 @@ class EmailsService extends NotificationService {
     }
 }
 
-export default EmailsService;
+export default EmailNotificatorService;
