@@ -1,14 +1,15 @@
 import { 
     type SubscriberConfig, 
     type SubscriberArgs,
+    OrderService,
   } from "@medusajs/medusa"
 import EmailNotificatorService from "src/services/email-notificator";
   
-  export default async function handleInvited({ 
+  export default async function handleRefundCreated({ 
     data, eventName, container, pluginOptions, 
   }: SubscriberArgs<Record<string, string>>) {
     const emailNotificator = container.resolve<EmailNotificatorService>("emailNotificatorService")
-    emailNotificator.sendNotification('invite.created', data, null);
+    emailNotificator.sendNotification(OrderService.Events.REFUND_CREATED, data, null);
     // sendGridService.sendEmail({
     //   templateId: "customer-confirmation",
     //   from: "hello@medusajs.com",
@@ -22,8 +23,8 @@ import EmailNotificatorService from "src/services/email-notificator";
   }
   
   export const config: SubscriberConfig = {
-    event: 'invite.created',
+    event: OrderService.Events.REFUND_CREATED,
     context: {
-      subscriberId: "user-invite-created-notificator-handler",
+      subscriberId: "order-refund-created-notificator-handler",
     },
   }

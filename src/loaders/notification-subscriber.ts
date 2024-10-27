@@ -14,6 +14,7 @@ import {
         'order.placed',
         'order.cancelled',
         'order.completed',
+        'order.payment_captured',
         'order.shipment_created',
         'order.refund_created',
         'customer.created',
