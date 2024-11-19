@@ -105,6 +105,17 @@ class EmailNotificatorService extends AbstractNotificationService  {
         }
         return {customer: null, data}
       }
+
+      async customerConfirmEmailData(data: any): Promise<CustomerData> {
+        const customer = await this.customerService.retrieve(data.id);
+        if(customer) {
+            return {
+                customer,
+                data
+            }
+        }
+        return {customer: null, data}
+      }
     
       inviteData(data: any): InviteData {
         return {
@@ -154,6 +165,16 @@ class EmailNotificatorService extends AbstractNotificationService  {
             for (const option of order.shipping_methods) {
                 totalValue += option.shipping_option.amount;
             }
+
+            const paymentType = order.payments.some((p) => {return p.provider_id !== 'manual'}) ? 'banking' : 'manual';
+            if(paymentType === 'banking' && event.includes("order.placed")) {
+                return {
+                    to: null,
+                    data: {},
+                    status: "sent",
+                };
+            }
+
             await this.sendEmail(order.email, event, {
                 event,
                 order,
@@ -176,6 +197,9 @@ class EmailNotificatorService extends AbstractNotificationService  {
             }
             else if(event.includes('.password')) {
                 customer = await this.customerPasswordResetData(data);
+            }
+            else if(event.includes('.email_confirm')) {
+                customer = await this.customerConfirmEmailData(data);
             }
 
             if(customer) {

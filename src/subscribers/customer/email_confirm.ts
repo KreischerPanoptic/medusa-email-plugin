@@ -1,19 +1,20 @@
 import { 
     type SubscriberConfig, 
     type SubscriberArgs,
+    CustomerService,
   } from "@medusajs/medusa"
 import EmailNotificatorService from "src/services/email-notificator";
   
-  export default async function handleInvited({ 
+  export default async function handleCustomerCreated({ 
     data, eventName, container, pluginOptions, 
   }: SubscriberArgs<Record<string, string>>) {
     const emailNotificator = container.resolve<EmailNotificatorService>("emailNotificatorService")
-    emailNotificator.sendNotification('invite.created', data, null);
+    emailNotificator.sendNotification('customer.email_confirm', data, null);
   }
   
   export const config: SubscriberConfig = {
-    event: 'invite.created',
+    event: 'customer.email_confirm',
     context: {
-      subscriberId: "user-invite-created-notificator-handler",
+      subscriberId: "customer-email-confirmation-requested-notificator-handler",
     },
   }

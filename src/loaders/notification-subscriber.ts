@@ -19,14 +19,9 @@ import {
         'order.refund_created',
         'customer.created',
         'customer.password_reset',
+        'customer.email_confirm',
         'invite.created',
         'user.created',
         'user.password_reset'
     ];
-    /*for (const event of emailEvents) {
-        notificationService.subscribe(
-            event,
-            "email-notificator"
-        )
-    }*/
 }
